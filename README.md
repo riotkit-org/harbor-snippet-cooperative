@@ -3,7 +3,7 @@ Snippet repository for RiotKit's Harbor - docker-compose YAML templates for serv
 
 ## Rules
 
-1. Snippets are versioned, but does not offer a upgrade from version to version. We do not want a complexity, those are snippets, not packages
+1. Snippets are versioned, but does not offer an upgrade from version to version. We do not want a complexity, those are snippets, not packages
 2. Snippets are providing containers, networks and volumes
 3. The containers should be placed always in main network to reduce complexity for end user
 4. The snippets does not need to be parametrized for each case, if something is complex, then let's create a second snippet with a different use-case, different workflow
