@@ -9,3 +9,4 @@ Snippet repository for RiotKit's Harbor - docker-compose YAML templates for serv
 4. The snippets does not need to be parametrized for each case, if something is complex, then let's create a second snippet with a different use-case, different workflow
 5. Dependencies such as database connection should be customized with environment variables
 6. Dependencies on other snippets should be placed in README.md of given snippet. Snippets are not packages - we do not support dependencies, the DevOps is an aware person that uses example code for faster development from ready-to-use blocks of code
+7. Collisions in files should be avoided, but it may happen. It's not a package manager. The DevOps should be aware and track changes in GIT repository - Harbor operates on a GIT repository
