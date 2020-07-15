@@ -1,0 +1,16 @@
+version: org.riotkit.rkd/yaml/v1
+imports:
+    - rkd.standardlib.env.SetEnvTask
+
+tasks:
+    :snippet:wizard:
+        arguments:
+            "path":
+                help: "Path to the snippet"
+        steps: |
+            #!python
+            from rkd.inputoutput import Wizard
+
+            Wizard(this)\
+                .ask('Service name', attribute='service_name', regexp='([A-Za-z0-9_]+)', default='redis')\
+                .finish()

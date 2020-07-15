@@ -1,0 +1,8 @@
+version: "{{ COMPOSE_VERSION }}"
+services:
+    {{ service_name }}:
+        image: redis:6.0-alpine
+        command: --appendonly yes
+        volumes:
+            - data/{{ service_name }}:/data
+
