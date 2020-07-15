@@ -1,3 +1,7 @@
+#
+# https://github.com/riotkit-org/riotkit-harbor-snippet-cooperative/tree/master/redis
+#
+
 version: "{{ COMPOSE_VERSION }}"
 services:
     {{ service_name }}:
@@ -5,4 +9,8 @@ services:
         command: --appendonly yes
         volumes:
             - data/{{ service_name }}:/data
+        labels:
+            org.riotkit.updateStrategy: rolling
+            org.riotkit.useMaintenanceMode: "false"
+            com.centurylinklabs.watchtower.enable: "false"
 
