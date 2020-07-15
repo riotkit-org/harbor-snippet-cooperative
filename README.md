@@ -25,6 +25,5 @@ files/
 
 ## Snippet installer customizations
 
-- `:snippet:copy` allows to overwrite a task that copies files of a snippet to the project root directory
-- `:snippet:prepare` allows to prepare files in the snippet directory eg. render jinja2 files basing on questions answered by the user
-
+- `:snippet:install` allows to overwrite a task that copies files of a snippet to the project root directory
+- `:snippet:wizard` allows to create an interactive installation wizard for the end-user
