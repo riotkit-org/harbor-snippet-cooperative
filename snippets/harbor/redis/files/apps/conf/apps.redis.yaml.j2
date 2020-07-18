@@ -8,7 +8,7 @@ services:
         image: redis:6.0-alpine
         command: --appendonly yes
         volumes:
-            - data/{{ service_name }}:/data
+            - ./data/{{ service_name }}:/data
         labels:
             org.riotkit.updateStrategy: rolling
             org.riotkit.useMaintenanceMode: "false"
