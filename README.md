@@ -27,3 +27,17 @@ files/
 
 - `:snippet:install` allows to overwrite a task that copies files of a snippet to the project root directory
 - `:snippet:wizard` allows to create an interactive installation wizard for the end-user
+
+From authors
+------------
+
+We are grassroot activists for social change, so we created this software while we were helping those fantastic initiatives:
+
+- RiotKit (https://riotkit.org)
+- International Workers Association (https://iwa-ait.org)
+- Anarchistyczne FAQ (http://anarchizm.info) a translation of Anarchist FAQ (https://theanarchistlibrary.org/library/the-anarchist-faq-editorial-collective-an-anarchist-faq)
+- Federacja Anarchistyczna (http://federacja-anarchistyczna.pl)
+- Związek Syndykalistów Polski (https://zsp.net.pl) (Polish section of IWA-AIT)
+- Komitet Obrony Praw Lokatorów (https://lokatorzy.info.pl)
+- Solidarity Federation (https://solfed.org.uk)
+- Priama Akcia (https://priamaakcia.sk)
