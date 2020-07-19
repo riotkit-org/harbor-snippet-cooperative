@@ -30,7 +30,7 @@ services:
         environment:
             VIRTUAL_HOST: "{{ domain_name() }}"
             {% if main_port -%}
-            VIRTUAL_PORT: "{{ domain_name() }}{% if redirect_from_www == "true" %},www.{{ domain_name() }}{% endif %}"
+            VIRTUAL_PORT: "{{ main_port }}"
             {%- endif %}
             {% if ssl_enabled == "true" -%}
             LETSENCRYPT_HOST: "{{ domain_name() }}{% if redirect_from_www == "true" %},www.{{ domain_name() }}{% endif %}"
