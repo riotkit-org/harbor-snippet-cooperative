@@ -1,0 +1,4 @@
+{
+    "description": "Simplest Redis Server configuration with persistent volume",
+    "maintainers": ["Andrew Johnson <https://github.com/blackandred>"]
+}

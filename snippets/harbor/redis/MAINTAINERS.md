@@ -1,1 +1,0 @@
-- Andrew Johnson <https://github.com/blackandred>

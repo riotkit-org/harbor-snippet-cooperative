@@ -25,6 +25,9 @@ Snippet structure
 # files to copy to main directory of the project, can contain subdirectories and files for a recursive copy
 files/
 
+# snippet information
+snippet.json
+
 # optional installer customizations
 .rkd/makefile.yaml
 ```
