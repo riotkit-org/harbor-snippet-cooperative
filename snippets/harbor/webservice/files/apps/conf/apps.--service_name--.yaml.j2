@@ -45,5 +45,12 @@ services:
             org.riotkit.useMaintenanceMode: "true"
             org.riotkit.redirectFromWWW: "{% if redirect_from_www == "true" %}true{% else %}false{% endif %}"
             org.riotkit.updateStrategy: recreate
+            com.centurylinklabs.watchtower.enable: false
 
+            # Integration with https://github.com/riotkit-org/services-dashboard
+            # (exposes a list of services hosted in this environment via WWW on a nice dashboard)
+            org.docker.services.dashboard.enabled: 'false'
+            org.docker.services.dashboard.description: '{{ domain_name() }} description here'
+            org.docker.services.dashboard.icon: 'pe-7s-note2'
+            org.docker.services.dashboard.only_for_admin: 'false'
 
