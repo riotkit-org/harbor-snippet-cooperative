@@ -1,7 +1,12 @@
-# riotkit-harbor-snippet-cooperative
+Harbor Snippet Cooperative
+==========================
+
 Snippet repository for RiotKit's Harbor - docker-compose YAML templates for services (applications, databases, etc.)
 
-## Rules
+For more documentation please read [RKD-COOP docs](https://github.com/riotkit-org/rkd-coop)
+
+Rules
+-----
 
 1. Snippets are versioned, but does not offer an upgrade from version to version. We do not want a complexity, those are snippets, not packages
 2. Snippets are providing containers, networks and volumes
@@ -12,7 +17,8 @@ Snippet repository for RiotKit's Harbor - docker-compose YAML templates for serv
 7. Collisions in files should be avoided, but it may happen. It's not a package manager. The DevOps should be aware and track changes in GIT repository - Harbor operates on a GIT repository
 8. The `harbor :cooperative:install` is a tool for human, not for automation, it considers interactive questions to the person who installs a snippet
 
-## Snippet structure
+Snippet structure
+-----------------
 
 ```bash
 
@@ -23,7 +29,8 @@ files/
 .rkd/makefile.yaml
 ```
 
-## Snippet installer customizations
+Snippet installer customizations
+--------------------------------
 
 - `:snippet:install` allows to overwrite a task that copies files of a snippet to the project root directory
 - `:snippet:wizard` allows to create an interactive installation wizard for the end-user
