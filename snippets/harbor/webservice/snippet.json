@@ -1,5 +1,5 @@
 {
-    "description": "Simplest Redis Server configuration with persistent volume",
+    "description": "Simplest Harbor Web Service definition, including labels and environment",
     "maintainers": ["Andrew Johnson <https://github.com/blackandred>"],
     "version": "1.0"
 }

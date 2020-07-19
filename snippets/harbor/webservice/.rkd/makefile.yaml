@@ -1,0 +1,26 @@
+version: org.riotkit.rkd/yaml/v1
+tasks:
+    :snippet:wizard:
+        arguments:
+            "path":
+                help: "Path to the snippet"
+        steps: |
+            #!python
+            from rkd.inputoutput import Wizard
+
+            wizard = Wizard(this)\
+                .ask('Service name', attribute='service_name', regexp='([A-Za-z0-9_]+)')\
+                .ask('Docker image', attribute='image')\
+                .ask('Enable SSL', attribute='ssl_enabled', choices=['yes', 'no'])\
+                .ask('Redirect from WWW to non-www domain', attribute='redirect_from_www', choices=['yes', 'no'])\
+                .ask('Exposed port', attribute='main_port', regexp='([0-9]+)')\
+
+            # domain vs subdomain
+            wizard.ask('Use domain or subdomain.${MAIN_DOMAIN} defined in .env', attribute='domain_type', choices=['domain', 'subdomain'], default='subdomain')
+
+            if wizard.answers['domain_type'] == 'domain':
+                wizard.ask('Domain name', attribute='domain')
+            else:
+                wizard.ask('Subdomain name', attribute='domain')
+
+            wizard.finish()

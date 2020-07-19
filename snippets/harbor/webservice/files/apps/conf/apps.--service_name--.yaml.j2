@@ -1,0 +1,49 @@
+#
+# Generated with RKD-Coop, modify to adjust your needs
+# ====================================================
+#
+# Legend:
+#   ${MAIN_DOMAIN}: The domain from .env file (can be eg. example.org)
+#   ${DOMAIN_SUFFIX}: Suffix from .env file (can be eg. .localhost, when developing on local machine)
+#
+# Assuming: ${MAIN_DOMAIN} = iwa-ait.org, ${DOMAIN_SUFFIX} = .localhost, then:
+#   db-admin.${MAIN_DOMAIN}${DOMAIN_SUFFIX} would resolve to db-admin.iwa-ait.org.localhost
+#
+# With above pattern you can achive working DNS names similar to production environment.
+#
+#
+# Generated with <3 by RKD-COOP & RiotKit-Do.
+# Enjoy, RiotKit - your anarchist tech collective.
+#
+{%- macro domain_name() -%}
+{%- if domain_type == 'domain' -%}
+{{ domain }}${DOMAIN_SUFFIX}
+{%- else -%}
+{{ domain }}.${MAIN_DOMAIN}${DOMAIN_SUFFIX}
+{%- endif -%}
+{%- endmacro %}
+version: {{ COMPOSE_VERSION }}
+
+services:
+    {{ service_name }}:
+        image: {{ image }}
+        environment:
+            VIRTUAL_HOST: "{{ domain_name() }}"
+            {% if main_port -%}
+            VIRTUAL_PORT: "{{ domain_name() }}{% if redirect_from_www == "true" %},www.{{ domain_name() }}{% endif %}"
+            {%- endif %}
+            {% if ssl_enabled == "true" -%}
+            LETSENCRYPT_HOST: "{{ domain_name() }}{% if redirect_from_www == "true" %},www.{{ domain_name() }}{% endif %}"
+            {%- endif %}
+
+        # Example volumes usage in standard Harbor way (keep in mind the directories structure)
+        #volumes:
+            #- ./apps/www-data/{{ domain_name() }}:/var/www/html              # website files, other kept in external repositories and synchronized by Harbor GIT integration
+            #- ./data/{{ domain_name() }}/uploads:/var/www/html/uploads       # dynamic files, uploads
+            #- ./containers/{{ domain_name() }}/config:/var/www/html/config   # configuration kept in GIT
+        labels:
+            org.riotkit.useMaintenanceMode: "true"
+            org.riotkit.redirectFromWWW: "{% if redirect_from_www == "true" %}true{% else %}false{% endif %}"
+            org.riotkit.updateStrategy: recreate
+
+
