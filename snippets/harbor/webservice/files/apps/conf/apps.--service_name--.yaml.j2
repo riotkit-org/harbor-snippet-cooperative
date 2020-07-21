@@ -22,7 +22,7 @@
 {{ domain }}.${MAIN_DOMAIN}${DOMAIN_SUFFIX}
 {%- endif -%}
 {%- endmacro %}
-version: {{ COMPOSE_VERSION }}
+version: "{{ COMPOSE_VERSION }}"
 
 services:
     {{ service_name }}:
