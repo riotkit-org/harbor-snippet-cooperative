@@ -1,0 +1,18 @@
+version: org.riotkit.rkd/yaml/v1
+tasks:
+    :snippet:wizard:
+        arguments:
+            "path":
+                help: "Path to the snippet"
+        steps: |
+            #!python
+            from rkd.inputoutput import Wizard
+
+            this.io().info_msg('Examples:')
+            this.io().info_msg('  Filtering by service name: name.startswith("gateway")')
+            this.io().info_msg('  Filtering by label: "org.riotkit.group" in service["labels"] and service["labels"]["org.riotkit.group"] == "true"')
+
+
+            Wizard(this)\
+                .ask('Type a service filter expression (Python expression)', attribute='selector', default='True')\
+                .finish()
