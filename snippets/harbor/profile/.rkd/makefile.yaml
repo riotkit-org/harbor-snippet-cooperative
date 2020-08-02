@@ -14,5 +14,6 @@ tasks:
 
 
             Wizard(this)\
+                .ask('Filter name', attribute='name', regexp='([A-Z\.a-z0-9]+)')\
                 .ask('Type a service filter expression (Python expression)', attribute='selector', default='True')\
                 .finish()
