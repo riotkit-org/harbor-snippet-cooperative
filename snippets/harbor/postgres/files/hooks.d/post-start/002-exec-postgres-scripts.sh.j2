@@ -1,0 +1,20 @@
+#!/bin/bash -e
+
+datadir=./data/templates/postgres.d/
+PG_SERVICE=${PG_SERVICE:-{{ container_name }}}
+PG_CONTAINER=$(harbor :service:get-container-name "${PG_SERVICE}")
+
+if [[ ! -d "${datadir}" ]] || [[ ! "$(ls -A ${datadir})" ]]; then
+    echo " >> No ${datadir} present, nothing to execute, fine."
+    exit 0
+fi
+
+echo " >> Executing Postgres scripts"
+harbor :service:wait-for "${PG_SERVICE}"
+
+for file in ${datadir}/*; do
+    echo " >> Passing '${file}' to Postgres instance"
+
+    docker cp "${file}" $PG_CONTAINER:/tmp/exec.sql
+    docker exec $PG_CONTAINER /bin/sh -c "psql -U ${PG_USER}  ${PG_DB} -f /tmp/exec.sql"
+done

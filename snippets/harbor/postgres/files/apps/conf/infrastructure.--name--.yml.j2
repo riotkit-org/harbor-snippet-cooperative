@@ -1,0 +1,60 @@
+#
+# Generated with RKD-Coop, modify to adjust your needs
+# ====================================================
+#
+# Legend:
+#   ${MAIN_DOMAIN}: The domain from .env file (can be eg. example.org)
+#   ${DOMAIN_SUFFIX}: Suffix from .env file (can be eg. .localhost, when developing on local machine)
+#
+# Assuming: ${MAIN_DOMAIN} = iwa-ait.org, ${DOMAIN_SUFFIX} = .localhost, then:
+#   db-admin.${MAIN_DOMAIN}${DOMAIN_SUFFIX} would resolve to db-admin.iwa-ait.org.localhost
+#
+# With above pattern you can achieve working DNS names similar to production environment.
+#
+#
+# Generated with <3 by RKD-COOP & RiotKit-Do.
+# Enjoy, RiotKit - your anarchist tech collective.
+#
+{%- macro domain_name() -%}
+{%- if domain_type == 'domain' -%}
+{{ domain }}${DOMAIN_SUFFIX}
+{%- else -%}
+{{ domain }}.${MAIN_DOMAIN}${DOMAIN_SUFFIX}
+{%- endif -%}
+{%- endmacro %}
+version: "{{ COMPOSE_VERSION }}"
+
+services:
+    {{ container_name | default('postgres') }}:
+        image: postgres:{{ version | default('12.3-alpine') }}
+        restart: always
+        environment:
+            POSTGRES_USER: "${PG_USER}"
+            POSTGRES_DB: "${PG_DB}"
+            POSTGRES_PASSWORD: "${PG_PASSWORD}"
+        ports:
+            - 127.0.0.1:5432:5432
+        mem_limit: 256m
+        volumes:
+            - ./data/db/{{ container_name | default('postgres') }}:/var/lib/postgresql/data
+        labels:
+            com.centurylinklabs.watchtower.enable: false
+            org.riotkit.updateStrategy: "compose"
+            org.riotkit.group: 'db'
+
+    {% if with_db_gui -%}
+    adminer:
+        image: adminer:4.7-standalone
+        restart: always
+        mem_limit: 160m
+        environment:
+            VIRTUAL_HOST: "{{ domain_name }}"
+            VIRTUAL_PORT: "80"
+            LETSENCRYPT_HOST: "{{ domain_name }}"
+            LETSENCRYPT_EMAIL: "${LETSENCRYPT_EMAIL}"
+        labels:
+            com.centurylinklabs.watchtower.enable: true
+            org.riotkit.updateStrategy: "rolling"
+            org.riotkit.group: 'db'
+   {%- endif %}
+

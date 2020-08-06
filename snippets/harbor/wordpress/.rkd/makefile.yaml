@@ -1,0 +1,34 @@
+version: org.riotkit.rkd/yaml/v1
+tasks:
+    :snippet:wizard:
+        arguments:
+            "path":
+                help: "Path to the snippet"
+        steps: |
+            #!python
+            from rkd.inputoutput import Wizard
+
+            this.io().info_msg('Welcome in the Wordpress installation Wizard :-)')
+
+            wizard = Wizard(this)\
+                .ask('Service name', attribute='service_name', regexp='([A-Za-z0-9_]+)')\
+                .ask('Enable SSL', attribute='ssl_enabled', choices=['yes', 'no'])\
+                .ask('Redirect from WWW to non-www domain', attribute='redirect_from_www', choices=['yes', 'no'])\
+
+            # domain vs subdomain
+            wizard.ask('Use domain or subdomain.${MAIN_DOMAIN} defined in .env', attribute='domain_type', choices=['domain', 'subdomain'], default='subdomain')
+
+            if wizard.answers['domain_type'] == 'domain':
+                wizard.ask('Domain name', attribute='domain')
+            else:
+                wizard.ask('Subdomain name', attribute='domain')
+
+            service_env_name = wizard.answers['service_name'].upper()
+
+            # database
+            wizard.ask('Database container name', attribute='db_container_name', '([A-Za-z0-9_\.]+)')\
+                .ask('Database user', attribute='DB_%s_USERNAME' % service_env_name, '([A-Za-z0-9_\.]+)', to_env=True)\
+                .ask('Database password', attribute='DB_%s_PASSWORD' % service_env_name, to_env=True)\
+                .ask('Database name', attribute='DB_%s_DBNAME' % service_env_name, '([A-Za-z0-9_\.]+)', to_env=True)
+
+            wizard.finish()

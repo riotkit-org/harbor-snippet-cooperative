@@ -1,0 +1,99 @@
+#!/usr/bin/env python
+
+#
+# PostgreSQL multi-user database initialization
+#
+# Environment variables:
+#   PG_CONTAINER_ID: Optional, Postgres container id
+#   PG_SERVICE: Service name in Harbor (defaults to "postgres")
+#   PG_USER: Administrative username
+#   PG_..._USER + PG_..._PASSWORD + PG_..._DB for databases creation, where "..." is the service name that uses Postgres
+#
+# Todo: To be rewritten to init-containers in Harbor 2.1+
+#
+
+from tempfile import NamedTemporaryFile
+import os
+import subprocess
+import dotenv
+
+
+def main(pg_service_name: str):
+    subprocess.check_output('harbor :service:wait-for "%s"' % pg_service_name, shell=True)
+    container_id = get_postgres_container_name(pg_service_name)
+
+    for varname, value in os.environ.items():
+        if varname.startswith('PG_') and varname.endswith('_USER'):
+            schema = varname[3:-5]
+
+            if not schema:
+                continue
+
+            lookup = ['PG_' + schema + '_PASSWORD', 'PG_' + schema + '_DB']
+
+            for var_to_lookup in lookup:
+                if var_to_lookup not in os.environ:
+                    raise Exception('"%s" needs to be defined in .env' % var_to_lookup)
+
+            create_db(
+                container_id,
+                os.getenv('PG_USER', 'postgres'),
+                os.getenv('PG_DB', 'postgres'),
+                os.getenv('PG_' + schema + '_USER'),
+                os.getenv('PG_' + schema + '_PASSWORD'),
+                os.getenv('PG_' + schema + '_DB')
+            )
+
+
+def create_db(container_id: str, admin_usr: str, admin_db: str, user: str, password: str, dbname: str):
+    print(' >> Creating user "%s"' % user)
+
+    try:
+        psql(container_id, admin_usr, admin_db, 'CREATE DATABASE "%s";' % dbname)
+    except subprocess.CalledProcessError as e:
+        if "already exists" in e.output.decode('utf-8'):
+            return
+
+        raise
+
+    psql(container_id, admin_usr, admin_db, 'CREATE USER "%s" WITH PASSWORD \'%s\';' % (user, password))
+    psql(container_id, admin_usr, admin_db, 'GRANT ALL PRIVILEGES ON DATABASE "%s" TO "%s";' % (dbname, user))
+
+
+def psql(container_id: str, admin_usr: str, admin_db: str, command: str) -> str:
+    """Executes a SQL query in container"""
+
+    with NamedTemporaryFile() as f:
+        f.write(command.encode('utf-8'))
+        f.flush()
+        subprocess.check_output('docker cp %s %s:/tmp/exec.sql' % (f.name, container_id), shell=True)
+
+    try:
+        out = subprocess.check_output(
+            "docker exec -t %s /bin/sh -c 'psql -v ON_ERROR_STOP=1 -t -U %s %s -f /tmp/exec.sql'" % (
+                container_id,
+                admin_usr,
+                admin_db
+            ),
+            shell=True, stderr=subprocess.STDOUT
+        )
+    except subprocess.CalledProcessError as e:
+        print(e.output.decode('utf-8'))
+        raise e
+
+    subprocess.check_output('docker exec %s /bin/sh -c "rm /tmp/exec.sql"' % container_id, shell=True)
+
+    return out.strip().decode('utf-8')
+
+
+def get_postgres_container_name(service_name: str) -> str:
+    if os.getenv('PG_CONTAINER_ID'):
+        return os.getenv('PG_CONTAINER_ID')
+
+    return subprocess.check_output('harbor :service:get-container-name %s' % service_name, shell=True)\
+        .decode('utf-8').strip()
+
+
+if __name__ == '__main__':
+    dotenv.load_dotenv()
+    main(os.getenv('PG_SERVICE', '{{ container_name }}'))

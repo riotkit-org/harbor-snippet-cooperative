@@ -1,0 +1,56 @@
+#
+# Generated with RKD-Coop, modify to adjust your needs
+# ====================================================
+#
+# Legend:
+#   ${MAIN_DOMAIN}: The domain from .env file (can be eg. example.org)
+#   ${DOMAIN_SUFFIX}: Suffix from .env file (can be eg. .localhost, when developing on local machine)
+#
+# Assuming: ${MAIN_DOMAIN} = iwa-ait.org, ${DOMAIN_SUFFIX} = .localhost, then:
+#   db-admin.${MAIN_DOMAIN}${DOMAIN_SUFFIX} would resolve to db-admin.iwa-ait.org.localhost
+#
+# With above pattern you can achive working DNS names similar to production environment.
+#
+#
+# Generated with <3 by RKD-COOP & RiotKit-Do.
+# Enjoy, RiotKit - your anarchist tech collective.
+#
+{%- macro domain_name() -%}
+{%- if domain_type == 'domain' -%}
+{{ domain }}${DOMAIN_SUFFIX}
+{%- else -%}
+{{ domain }}.${MAIN_DOMAIN}${DOMAIN_SUFFIX}
+{%- endif -%}
+{%- endmacro %}
+version: "{{ COMPOSE_VERSION }}"
+
+volumes:
+    {{ service_name }}_cms_files:
+
+services:
+    wp_{{ service_name }}:
+        image: quay.io/riotkit/wp-auto-update:5.4-v1.0.3
+        restart: always
+        environment:
+            VIRTUAL_HOST: "{{ domain_name() }}"
+            VIRTUAL_PORT: "80"
+
+            {% if ssl_enabled == "true" -%}
+            LETSENCRYPT_HOST: "{{ domain_name() }}{% if redirect_from_www == "true" %},www.{{ domain_name() }}{% endif %}"
+            {%- endif %}
+            LETSENCRYPT_EMAIL: "${LETSENCRYPT_EMAIL}"
+            WORDPRESS_DB_HOST: "{{ db_container_name }}"
+            WORDPRESS_DB_USER: "${DB_{{ service_name | upper }}_USERNAME}"
+            WORDPRESS_DB_NAME: "${DB_{{ service_name | upper }}_DBNAME}"
+            WORDPRESS_DB_PASSWORD: "${DB_{{ service_name | upper }}_PASSWORD}"
+        volumes:
+            - {{ service_name }}_cms_files:/var/www/html
+            - ./data/{{ service_name }}/wp-content/:/var/www/html/wp-content
+        expose:
+            - "80"
+        labels:
+            org.riotkit.useMaintenanceMode: "true"
+            org.riotkit.redirectFromWWW: "{% if redirect_from_www == "true" %}true{% else %}false{% endif %}"
+            org.riotkit.updateStrategy: "rolling"
+            com.centurylinklabs.watchtower.enable: "false"
+
